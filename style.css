@@ -758,12 +758,6 @@ body {
   opacity: 1;
 }
 
-.footer-social .social-link .ico {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
 .project-links {
   display: flex;
   gap: var(--spacing-md);
