@@ -1,5 +1,5 @@
 // اسکریپت اصلی رزومه
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // متغیرهای اصلی
     const nav = document.querySelector('.main-nav');
     const navLinks = document.querySelectorAll('.nav-link');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinksContainer = document.querySelector('.nav-links');
 
     if (mobileMenuToggle && navLinksContainer) {
-        mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.addEventListener('click', function () {
             this.classList.toggle('active');
             navLinksContainer.classList.toggle('active');
             document.body.style.overflow = navLinksContainer.classList.contains('active') ? 'hidden' : '';
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // بستن منو هنگام کلیک روی لینک
         navLinks.forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
                 if (window.innerWidth <= 768) {
                     mobileMenuToggle.classList.remove('active');
                     navLinksContainer.classList.remove('active');
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // بستن منو هنگام کلیک روی overlay
-        navLinksContainer.addEventListener('click', function(e) {
+        navLinksContainer.addEventListener('click', function (e) {
             if (window.innerWidth <= 768 && e.target === this) {
                 mobileMenuToggle.classList.remove('active');
                 navLinksContainer.classList.remove('active');
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // بستن منو هنگام تغییر سایز صفحه
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', function () {
             if (window.innerWidth > 768) {
                 mobileMenuToggle.classList.remove('active');
                 navLinksContainer.classList.remove('active');
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // اسکرول smooth برای لینک‌های ناوبری
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             const targetSection = document.querySelector(targetId);
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // عملکرد فرم تماس
     const contactForm = document.querySelector('.form');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             // جمع‌آوری داده‌های فرم
@@ -341,3 +341,307 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('رزومه با موفقیت بارگذاری شد! 🚀');
 });
+
+
+/* ============================================================
+   3d-effects.js — موتور افکتهای سهبعدی
+   بعد از script.js بارگذاری شود
+   ============================================================ */
+(function () {
+    'use strict';
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /* ---------- ۱) تگکردن کارتها بهعنوان سهبعدی ---------- */
+        const cards = Array.from(document.querySelectorAll(
+            '.stat, .highlight-item, .skill-category, .timeline-item, .education-card, .project-card, .info-item'
+        ));
+        cards.forEach(c => c.classList.add('t3d-card'));
+
+        /* ---------- ۲) ورود سهبعدی هنگام اسکرول (stagger شده) ---------- */
+        const revealEls = Array.from(document.querySelectorAll(
+            '.about-text, .about-highlights, .skill-category, .timeline-item, .education-card, .project-card, .info-item'
+        ));
+        revealEls.forEach(el => {
+            el.classList.remove('fade-in-up'); // جلوگیری از تداخل با انیمیشن قبلی
+            el.classList.add('t3d-reveal');
+        });
+
+        if (!('IntersectionObserver' in window) || prefersReduced) {
+            revealEls.forEach(el => el.classList.add('is-visible'));
+        } else {
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const siblings = Array.from(el.parentElement.children)
+                        .filter(c => c.classList.contains('t3d-reveal'));
+                    const idx = Math.max(0, siblings.indexOf(el));
+                    setTimeout(() => el.classList.add('is-visible'), Math.min(idx, 5) * 90);
+                    io.unobserve(el);
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+            revealEls.forEach(el => io.observe(el));
+        }
+
+        if (prefersReduced) return; // بدون حرکت اضافه برای کاربران حساس به موشن
+
+        /* ---------- ۳) افکت Tilt با موس + براقیت نور ---------- */
+        if (!isTouch) {
+            cards.forEach(function (card) {
+                card.addEventListener('mousemove', function (e) {
+                    const r = card.getBoundingClientRect();
+                    const x = (e.clientX - r.left) / r.width - 0.5;
+                    const y = (e.clientY - r.top) / r.height - 0.5;
+                    card.style.setProperty('--ry', (x * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--rx', (-y * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--mx', ((x + 0.5) * 100).toFixed(1) + '%');
+                    card.style.setProperty('--my', ((y + 0.5) * 100).toFixed(1) + '%');
+                });
+                card.addEventListener('mouseleave', function () {
+                    card.style.setProperty('--rx', '0deg');
+                    card.style.setProperty('--ry', '0deg');
+                });
+            });
+        }
+
+        /* ---------- ۴) پارالاکس موس در هیرو ---------- */
+        const hero = document.querySelector('.hero-section');
+        if (hero && !isTouch) {
+            hero.addEventListener('mousemove', function (e) {
+                const cx = (e.clientX / window.innerWidth) - 0.5;
+                const cy = (e.clientY / window.innerHeight) - 0.5;
+                document.documentElement.style.setProperty('--hx', cx.toFixed(3));
+                document.documentElement.style.setProperty('--hy', cy.toFixed(3));
+            });
+            hero.addEventListener('mouseleave', function () {
+                document.documentElement.style.setProperty('--hx', '0');
+                document.documentElement.style.setProperty('--hy', '0');
+            });
+        }
+
+        /* ---------- ۵) نوار پیشرفت اسکرول + پارالاکس پسزمینه ---------- */
+        const progress = document.createElement('div');
+        progress.className = 't3d-progress';
+        document.body.appendChild(progress);
+
+        const heroBg = document.querySelector('.hero-bg-pattern');
+        let ticking = false;
+
+        function onScroll() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+                const y = window.scrollY;
+                const max = document.documentElement.scrollHeight - window.innerHeight;
+                progress.style.width = max > 0 ? ((y / max) * 100).toFixed(2) + '%' : '0%';
+                if (heroBg && y < window.innerHeight * 1.5) {
+                    heroBg.style.setProperty('--sy', y.toFixed(1));
+                }
+                ticking = false;
+            });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        /* ---------- ۶) پارتیکلهای عمقدار ---------- */
+        document.querySelectorAll('.particle').forEach(function (p) {
+            p.style.setProperty('--pz', (Math.random() * 160 + 20).toFixed(0) + 'px');
+        });
+
+        // بازنویسی keyframes فلوت با نسخه سهبعدی
+        // (چون بعد از اسکریپت اصلی تزریق میشود، نسخه ما برنده است)
+        const depthStyle = document.createElement('style');
+        depthStyle.textContent = `
+            @keyframes float {
+                0%   { transform: translateZ(var(--pz, 40px)) translateY(0) rotate(0deg); }
+                33%  { transform: translateZ(calc(var(--pz, 40px) * 1.7)) translateY(-25px) rotate(120deg); }
+                66%  { transform: translateZ(calc(var(--pz, 40px) * 0.3)) translateY(12px) rotate(240deg); }
+                100% { transform: translateZ(var(--pz, 40px)) translateY(0) rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(depthStyle);
+
+        console.log('حالت سهبعدی فعال شد 🎮');
+    });
+})();
+
+
+/* ============================================================
+   projects-filter.js — دستهبندی سهبعدی نمونهکارها
+   بعد از script.js و 3d-effects.js بارگذاری شود
+   ============================================================ */
+(function () {
+    'use strict';
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ==========================================================
+       ⚙️ CONFIG — دستهها و کلمات کلیدی شناسایی
+       اگر پروژهای در دسته اشتباه قرار گرفت،
+       یک کلمه از «تیتر یا لینک» همان پروژه را به آرایه keywords اضافه کن.
+       ========================================================== */
+    const CATEGORIES = [
+        {
+            id: 'all',
+            label: 'همه',
+            icon: 'fa-layer-group',
+            keywords: null
+        },
+        {
+            id: 'web',
+            label: 'وبسایت',
+            icon: 'fa-globe',
+            keywords: ['کافه', 'رسو', 'rosso', 'بلا', 'bellamode', 'برنجستان', 'وردپرس', 'فروشگاه', 'رستوران', 'پینت', 'paint', 'سایت']
+        },
+        {
+            id: 'app',
+            label: 'اپلیکیشن و ابزار',
+            icon: 'fa-wand-magic-sparkles',
+            keywords: ['پسورد', 'password', 'فودلی', 'foodly', 'رمز', 'amir-model', 'مدل']
+        },
+        {
+            id: 'bot',
+            label: 'ربات تلگرام',
+            icon: 'fa-robot',
+            keywords: ['ربات', 'تلگرام', 'bot', 'miniapptel']
+        },
+        {
+            id: 'lab',
+            label: 'کار با AI',
+            icon: 'fa-flask',
+            keywords: ['v0', 'کلون', 'clone', 'تمرین']
+        },
+        {
+            id: 'other',
+            label: 'اپلیکیشن اندروید',
+            icon: 'fa-box-open',
+            keywords: []
+        }
+    ];
+    /* ========================================================== */
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const cards = Array.from(document.querySelectorAll('.project-card'));
+        if (!cards.length) return;
+
+        /* ---------- ۱) تشخیص دسته هر کارت (خودکار) ---------- */
+        cards.forEach(function (card) {
+            if (card.dataset.pfCat) return; // اگر دستی در HTML ست شده، احترام بگذار
+            const text = (card.textContent + ' ' +
+                Array.from(card.querySelectorAll('a[href]'))
+                    .map(a => a.href).join(' ')).toLowerCase();
+
+            let matched = 'other';
+            for (const cat of CATEGORIES) {
+                if (!cat.keywords) continue;
+                if (cat.keywords.some(k => text.indexOf(k.toLowerCase()) !== -1)) {
+                    matched = cat.id;
+                    break;
+                }
+            }
+            card.dataset.pfCat = matched;
+        });
+
+        /* ---------- ۲) پیدا کردن والد کارتها (گرید) ---------- */
+        const grid = cards[0].parentElement;
+        grid.style.perspective = '1000px';
+
+        /* ---------- ۳) ساخت نوار دکمههای سهبعدی ---------- */
+        const counts = { all: cards.length };
+        CATEGORIES.forEach(c => {
+            if (c.id !== 'all') {
+                counts[c.id] = cards.filter(k => k.dataset.pfCat === c.id).length;
+            }
+        });
+
+        const tabsEl = document.createElement('div');
+        tabsEl.className = 'pf-tabs';
+        tabsEl.setAttribute('role', 'toolbar');
+        tabsEl.setAttribute('aria-label', 'دستهبندی نمونهکارها');
+
+        // فقط دستههایی که کار دارن + همه
+        const visibleCats = CATEGORIES.filter(c => c.id === 'all' || counts[c.id] > 0);
+
+        visibleCats.forEach(function (cat) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pf-tab' + (cat.id === 'all' ? ' active' : '');
+            btn.dataset.pfId = cat.id;
+            btn.setAttribute('aria-pressed', cat.id === 'all' ? 'true' : 'false');
+            btn.innerHTML =
+                '<i class="fas ' + cat.icon + '"></i>' +
+                '<span>' + cat.label + '</span>' +
+                '<span class="pf-tab-count">' + toPersian(counts[cat.id]) + '</span>';
+            btn.addEventListener('click', function () { activate(cat.id); });
+            tabsEl.appendChild(btn);
+        });
+
+        // درج نوار قبل از گرید
+        grid.parentNode.insertBefore(tabsEl, grid);
+
+        /* ---------- ۴) تبدیل اعداد فارسی ---------- */
+        function toPersian(num) {
+            return String(num).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+        }
+
+        /* ---------- ۵) منطق فیلتر با انیمیشن سهبعدی ---------- */
+        let currentId = 'all';
+
+        function activate(id) {
+            if (id === currentId) return;
+            currentId = id;
+
+            // بهروزرسانی حالت دکمهها
+            tabsEl.querySelectorAll('.pf-tab').forEach(function (t) {
+                const on = t.dataset.pfId === id;
+                t.classList.toggle('active', on);
+                t.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+
+            // فیلتر کارتها با ورود stagger شده
+            let shownIndex = 0;
+            cards.forEach(function (card) {
+                const match = (id === 'all') || card.dataset.pfCat === id;
+                card.classList.remove('pf-pop');
+                card.style.animationDelay = '';
+                card.classList.toggle('pf-hidden', !match);
+
+                if (match && !prefersReduced) {
+                    card.style.animationDelay = (Math.min(shownIndex, 8) * 80) + 'ms';
+                    void card.offsetWidth; // ریاستارت انیمیشن
+                    card.classList.add('pf-pop');
+                }
+                if (match) shownIndex++;
+            });
+
+            // در موبایل، دکمه فعال وسط صفحه بیاید
+            if (window.innerWidth <= 768) {
+                const activeBtn = tabsEl.querySelector('.pf-tab.active');
+                if (activeBtn) {
+                    activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            }
+        }
+
+        /* ---------- ۶) ناوبری کیبورد با فلشها ---------- */
+        tabsEl.addEventListener('keydown', function (e) {
+            const tabs = Array.from(tabsEl.querySelectorAll('.pf-tab'));
+            const idx = tabs.indexOf(document.activeElement);
+            if (idx === -1) return;
+
+            let next = -1;
+            if (e.key === 'ArrowLeft') next = idx + 1;       // RTL: چپ = بعدی
+            else if (e.key === 'ArrowRight') next = idx - 1;  // RTL: راست = قبلی
+            if (next >= 0 && next < tabs.length) {
+                e.preventDefault();
+                tabs[next].focus();
+                tabs[next].click();
+            }
+        });
+    });
+})();
