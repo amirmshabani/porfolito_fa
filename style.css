@@ -1261,3 +1261,406 @@ body {
     padding-top: 120px;
   }
 }
+
+
+/* ============================================================
+   style-3d.css — ارتقای سهبعدی
+   رنگها دقیقاً همان متغیرهای قبلی هستند (بدون تغییر پالت)
+   ============================================================ */
+
+/* ---------- صحنه و پرسپکتیو ---------- */
+.hero-section,
+.section,
+.hero-content,
+.nav-links {
+  perspective: 1400px;
+  perspective-origin: 50% 35%;
+}
+
+.hero-content,
+.t3d-card {
+  transform-style: preserve-3d;
+}
+
+/* ---------- نوار پیشرفت اسکرول (راستچین) ---------- */
+.t3d-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 4px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+  box-shadow: 0 0 12px var(--primary-color), 0 0 30px rgba(99, 102, 241, .55);
+  border-radius: 0 0 4px 4px;
+  z-index: 9999;
+  transition: width .1s linear;
+  pointer-events: none;
+}
+
+/* ---------- ورود سهبعدی سکشنها هنگام اسکرول ---------- */
+.t3d-reveal {
+  opacity: 0;
+}
+
+.t3d-reveal.is-visible {
+  animation: t3d-enter .9s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes t3d-enter {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(35deg) translateY(70px) translateZ(-50px) scale(.9);
+    transform-origin: 50% 100%;
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0deg) translateY(0) translateZ(0) scale(1);
+  }
+}
+
+/* ---------- کارتهای سهبعدی (Tilt با موس) ---------- */
+.t3d-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --tz: 0px;
+  position: relative;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--tz));
+  transition: transform .18s ease-out, box-shadow .35s ease, border-color .35s ease;
+  will-change: transform;
+}
+
+.t3d-card:hover {
+  --tz: 16px;
+  border-color: var(--border-hover);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, .55),
+    0 0 35px rgba(99, 102, 241, .18),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+/* براقیت نوری که دنبال موس حرکت میکند */
+.t3d-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%),
+              rgba(99, 102, 241, .22),
+              rgba(6, 182, 212, .10) 45%,
+              transparent 70%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.t3d-card:hover::after {
+  opacity: 1;
+}
+
+/* ---------- هیرو: پارالاکس موس ---------- */
+.hero-text {
+  transform: rotateY(calc(var(--hx, 0) * -6deg)) rotateX(calc(var(--hy, 0) * 6deg))
+             translate3d(calc(var(--hx, 0) * 18px), calc(var(--hy, 0) * 12px), 60px);
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
+.hero-image {
+  transform: rotateY(calc(var(--hx, 0) * 8deg)) rotateX(calc(var(--hy, 0) * -8deg))
+             translate3d(calc(var(--hx, 0) * -25px), calc(var(--hy, 0) * -18px), 30px);
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
+/* پسزمینه هیرو با اسکرول جابهجا میشود */
+.hero-bg-pattern {
+  transform: translateY(calc(var(--sy, 0) * 0.3px)) translateZ(-90px);
+}
+
+/* ---------- عکس پروفایل: شناور سهبعدی ---------- */
+.profile-image {
+  transform-style: preserve-3d;
+  animation: t3d-float 8s ease-in-out infinite;
+  box-shadow:
+    0 35px 60px -15px rgba(0, 0, 0, .6),
+    0 0 45px rgba(99, 102, 241, .25),
+    0 0 80px rgba(6, 182, 212, .12);
+}
+
+@keyframes t3d-float {
+  0%, 100% {
+    transform: translateY(0) rotateX(7deg) rotateY(-7deg);
+  }
+  50% {
+    transform: translateY(-16px) rotateX(-5deg) rotateY(7deg);
+  }
+}
+
+/* ---------- تیترها: عمق سهبعدی (بدون تغییر رنگ) ---------- */
+.name {
+  filter: drop-shadow(0 4px 6px rgba(6, 182, 212, .4)) drop-shadow(0 18px 35px rgba(99, 102, 241, .35));
+}
+
+.section-title {
+  transform: rotateX(10deg);
+  transform-origin: 50% 100%;
+  text-shadow:
+    0 1px 0 rgba(99, 102, 241, .4),
+    0 2px 0 rgba(99, 102, 241, .3),
+    0 3px 0 rgba(99, 102, 241, .2),
+    0 4px 0 rgba(99, 102, 241, .1),
+    0 10px 20px rgba(6, 182, 212, .35);
+}
+
+/* ---------- لینکهای منو: چرخش سهبعدی ---------- */
+.nav-link {
+  transform-style: preserve-3d;
+  transition: transform .25s ease, color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  transform: rotateX(16deg) translateZ(10px);
+}
+
+.nav-link.active {
+  box-shadow: 0 8px 18px -8px rgba(99, 102, 241, .6);
+}
+
+/* ---------- نوار مهارتها: درخشش نئونی ---------- */
+.skill-fill {
+  box-shadow: 0 0 10px var(--primary-color), 0 0 22px rgba(99, 102, 241, .45);
+}
+
+/* ---------- دکمه ارسال: حالت فشردن سهبعدی ---------- */
+.submit-btn {
+  transform-style: preserve-3d;
+  box-shadow: 0 6px 0 -2px var(--primary-dark), 0 14px 25px -10px rgba(79, 70, 229, .55);
+  transition: transform .15s ease, box-shadow .2s ease, background .3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px) rotateX(8deg);
+  box-shadow: 0 9px 0 -2px var(--primary-dark), 0 20px 35px -10px rgba(79, 70, 229, .6);
+}
+
+.submit-btn:active {
+  transform: translateY(2px) rotateX(0deg);
+  box-shadow: 0 3px 0 -2px var(--primary-dark);
+}
+
+/* ---------- پارتیکلها: عمق صحنه ---------- */
+.particle {
+  transform: translateZ(var(--pz, 40px));
+}
+
+/* ---------- دسترسپذیری: کاهش حرکت ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .t3d-reveal {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .t3d-card,
+  .hero-text,
+  .hero-image,
+  .profile-image,
+  .nav-link,
+  .submit-btn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* ============================================================
+   projects-filter.css — دستهبندی سهبعدی نمونهکارها
+   رنگها همان متغیرهای قبلی (:root در style.css)
+   ============================================================ */
+
+/* ---------- نوار دکمههای دستهبندی ---------- */
+.pf-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+  perspective: 900px;
+  perspective-origin: 50% 40%;
+}
+
+.pf-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.65rem 1.35rem;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  backdrop-filter: blur(10px);
+  /* عمق مکعبی: لایه زیرین دکمه */
+  box-shadow:
+    0 4px 0 -1px rgba(0, 0, 0, .45),
+    0 10px 20px -8px rgba(0, 0, 0, .5),
+    inset 0 1px 0 rgba(255, 255, 255, .06);
+  transition: transform .22s cubic-bezier(.34, 1.4, .64, 1),
+              box-shadow .22s ease, background .25s ease,
+              color .25s ease, border-color .25s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.pf-tab i {
+  font-size: .95em;
+  transition: transform .25s ease;
+}
+
+.pf-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--text-primary);
+  background: rgba(99, 102, 241, .25);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  transform: translateZ(14px); /* بالا آمدن شمارنده از سطح دکمه */
+}
+
+.pf-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  transform: translateY(-4px) rotateX(-10deg) translateZ(8px);
+  box-shadow:
+    0 8px 0 -1px rgba(0, 0, 0, .45),
+    0 18px 30px -10px rgba(0, 0, 0, .55),
+    0 0 25px rgba(99, 102, 241, .25),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.pf-tab:hover i {
+  transform: translateZ(12px) rotate(-8deg);
+}
+
+.pf-tab:active {
+  transform: translateY(1px) rotateX(4deg) translateZ(0);
+  box-shadow:
+    0 2px 0 -1px rgba(0, 0, 0, .45),
+    0 6px 12px -6px rgba(0, 0, 0, .5);
+  transition-duration: .08s; /* فشردهشدن فوری */
+}
+
+/* ---------- حالت فعال: مکعب نئونی بلندشده ---------- */
+.pf-tab.active {
+  color: var(--text-primary);
+  background: linear-gradient(135deg,
+              rgba(99, 102, 241, .35), rgba(6, 182, 212, .25));
+  border-color: rgba(99, 102, 241, .55);
+  transform: translateY(-6px) rotateX(-14deg) translateZ(16px);
+  box-shadow:
+    0 6px 0 -1px var(--primary-dark),
+    0 22px 35px -12px rgba(79, 70, 229, .6),
+    0 0 35px rgba(99, 102, 241, .4),
+    0 0 60px rgba(6, 182, 212, .15),
+    inset 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.pf-tab.active .pf-tab-count {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-color: transparent;
+}
+
+.pf-tab:focus-visible {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 3px;
+}
+
+/* ---------- حالت مخفی و انیمیشن ورود سهبعدی کارتها ---------- */
+.project-card.pf-hidden {
+  display: none;
+}
+
+.project-card.pf-pop {
+  animation: pf-pop .6s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes pf-pop {
+  0% {
+    opacity: 0;
+    transform: perspective(700px) rotateX(45deg) translateY(60px) translateZ(-60px) scale(.82);
+    transform-origin: 50% 100%;
+  }
+  60% {
+    transform: perspective(700px) rotateX(-6deg) translateY(-6px) translateZ(12px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(700px) rotateX(0) translateY(0) translateZ(0) scale(1);
+  }
+}
+
+/* ---------- موبایل: نوار افقی اسکرولی با Snap ---------- */
+@media (max-width: 768px) {
+  .pf-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+    margin: 0 calc(var(--spacing-lg) * -1) var(--spacing-2xl);
+    scrollbar-width: none;
+  }
+
+  .pf-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pf-tab {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    padding: 0.55rem 1.1rem;
+  }
+
+  /* در موبایل تیلت موس نداریم، ولی عمق و فشردهشدن لمسی حفظ میشود */
+  .pf-tab:hover {
+    transform: none;
+  }
+
+  .pf-tab.active {
+    transform: translateY(-3px) translateZ(8px);
+  }
+
+  .pf-tab:active {
+    transform: scale(.95) translateY(1px);
+  }
+}
+
+/* ---------- کاهش حرکت ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pf-tab,
+  .pf-tab i,
+  .pf-tab-count {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .project-card.pf-pop {
+    animation: none !important;
+    opacity: 1;
+  }
+}
