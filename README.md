@@ -1,2 +1,2 @@
 # porfolito_fa
-## resome online for myself
+## Resume online for myself
