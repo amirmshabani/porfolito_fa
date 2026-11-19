@@ -1664,3 +1664,38 @@ body {
     opacity: 1;
   }
 }
+
+/* دکمه دانلود رزومه (بالا-چپ هیرو) */
+.resume-btn {
+  position: absolute;
+  top: 96px;
+  left: 32px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.resume-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+@media (max-width: 768px) {
+  .resume-btn {
+    top: 76px;
+    left: 16px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+}
