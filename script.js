@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
             id: 'lab',
             label: 'کار با AI',
             icon: 'fa-flask',
-            keywords: ['v0', 'کلون', 'clone', 'تمرین']
+            keywords: ['v0', 'کلون', 'clone', 'تمرین' , 'quran']
         },
         {
             id: 'other',
