@@ -1699,3 +1699,29 @@ body {
     font-size: var(--font-size-xs);
   }
 }
+
+/* رفع اسکرول افقی موبایل */
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.footer-social {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  /* جلوگیری از بیرون‌زدن گریدها بخاطر محتوای عریض */
+  .skills-grid,
+  .education-grid,
+  .projects-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* منفی‌بودن margin با padding کانتینر موبایل (1rem) هماهنگ بشه */
+  .pf-tabs {
+    margin: 0 calc(var(--spacing-md) * -1) var(--spacing-2xl);
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+  }
+}
